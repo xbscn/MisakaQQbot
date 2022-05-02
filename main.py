@@ -1,22 +1,63 @@
 import asyncio
+from asyncio import AbstractEventLoop
+
 from graia.ariadne.app import Ariadne
+from graia.ariadne.connection.util import UploadMethod
 from graia.ariadne.entry import config
+from graia.ariadne.event.lifecycle import ApplicationLaunched
 from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.message.element import Plain, At, Image
+from graia.ariadne.message.element import Plain, At, Image, Voice, File
 from graia.ariadne.message.parser.base import MentionMe, DetectPrefix
 from graia.ariadne.model import Friend, Group, Member
+from graia.ariadne.message.element import MusicShare, MusicShareKind
+
 import random
 import image
 import music as _music
-import time
+import birthday
+from graiax import silkcoder
+birthdayGroups=[322819699,599795569]
+birthdayed=False
+OnlyMyRailgun=MusicShare(
+    kind=MusicShareKind.NeteaseCloudMusic,
+    title=r"only my railgun",
+    summary=r"TV动画《某科学的超电磁炮》OP1",
+    jumpUrl=r"https://music.163.com/#/song?id=725692",
+    pictureUrl=r"http://p1.music.126.net/pviFxK7sGSdu3xmWRt9Lgw==/109951166296227310.jpg?param=130y130",
+    musicUrl=r"http://music.163.com/song/media/outer/url?id=725692.mp3",
+    brief=r"",
 
+
+)
 app = Ariadne(
     config(
         verify_key="1034410344",  # 填入 VerifyKey
         account=934975265,  # 你的机器人的 qq 号
     ),
 )
-
+@app.broadcast.receiver(ApplicationLaunched)
+async def start_background(loop: AbstractEventLoop):
+    global birthdayed
+    global OnlyMyRailgun
+    OnlyMyRailgun_Path="music\\fripSide (フリップサイド) - only my railgun [mqms2].mp3"
+    while True:
+        if (birthday.isBirthday()and not birthdayed):
+            for i in birthdayGroups:
+                await app.send_group_message(i,MessageChain("御坂美琴生日快乐!") )
+                await asyncio.sleep(1)
+                await app.send_group_message(i,MessageChain(Image(path="image\\birthday.png")))
+                await asyncio.sleep(1)
+                await app.send_group_message(i,MessageChain([OnlyMyRailgun]))
+                await asyncio.sleep(1)
+                await app.send_group_message(i,MessageChain(Voice(data_bytes= await silkcoder.async_encode(OnlyMyRailgun_Path,))))
+                await asyncio.sleep(1)
+                with open(OnlyMyRailgun_Path,"rb") as f:
+                    await app.upload_file(name="fripSide (フリップサイド) - only my railgun [mqms2].mp3",target=i,path="",data=f.read(),method=UploadMethod.Group
+)
+            birthdayed=True
+        elif (not birthday.isBirthday()):
+            birthdayed=False
+        await asyncio.sleep(1)
 
 @app.broadcast.receiver("FriendMessage")
 async def friend_message_listener(app: Ariadne, friend: Friend):

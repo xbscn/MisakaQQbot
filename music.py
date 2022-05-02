@@ -1,9 +1,13 @@
+import os
+
 import requests
 import json
 import pickle
 
 from graia.ariadne.message.element import MusicShare, MusicShareKind
-
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+os.chdir(dname)
 data = {"s": "water", "limit": 2}
 
 headers = {

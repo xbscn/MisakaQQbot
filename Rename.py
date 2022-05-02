@@ -1,4 +1,7 @@
 import os
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+os.chdir(dname)
 pathDir = os.listdir("image")
 for i in range(len(pathDir)):
     end=pathDir[i].split(".")[-1]
