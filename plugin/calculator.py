@@ -1,4 +1,4 @@
-def calculator(messageChain):
+def calculator(chain):
     text = str(chain).replace("bot 计算器", "").strip()
     can = "1234567890+-*/()|&^."
     canfun = ["sum"]  # 当作没有
