@@ -6,27 +6,24 @@ from graia.ariadne.connection.util import UploadMethod
 from graia.ariadne.entry import config
 from graia.ariadne.event.lifecycle import ApplicationLaunched
 from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.message.element import Plain, At, Image, Voice, File
+from graia.ariadne.message.element import MusicShare, MusicShareKind
+from graia.ariadne.message.element import Plain, At, Image, Voice
 from graia.ariadne.message.parser.base import MentionMe, DetectPrefix
 from graia.ariadne.model import Friend, Group, Member
-from graia.ariadne.message.element import MusicShare, MusicShareKind
-
-import random
-import image
-import music as _music
-import birthday
 from graiax import silkcoder
-birthdayGroups=[322819699,599795569]
-birthdayed=False
-OnlyMyRailgun=MusicShare(
+
+from plugin import birthday, image, music as _music,calculator
+
+birthdayGroups = [322819699, 599795569]
+birthdayed = False
+OnlyMyRailgun = MusicShare(
     kind=MusicShareKind.NeteaseCloudMusic,
     title=r"only my railgun",
     summary=r"TV动画《某科学的超电磁炮》OP1",
     jumpUrl=r"https://music.163.com/#/song?id=725692",
-    pictureUrl=r"http://p1.music.126.net/pviFxK7sGSdu3xmWRt9Lgw==/109951166296227310.jpg?param=130y130",
-    musicUrl=r"http://music.163.com/song/media/outer/url?id=725692.mp3",
+    pictureUrl=r"https://p1.music.126.net/pviFxK7sGSdu3xmWRt9Lgw==/109951166296227310.jpg?param=130y130",
+    musicUrl=r"https://music.163.com/song/media/outer/url?id=725692.mp3",
     brief=r"",
-
 
 )
 app = Ariadne(
@@ -35,29 +32,34 @@ app = Ariadne(
         account=934975265,  # 你的机器人的 qq 号
     ),
 )
+
+
 @app.broadcast.receiver(ApplicationLaunched)
 async def start_background(loop: AbstractEventLoop):
     global birthdayed
     global OnlyMyRailgun
-    OnlyMyRailgun_Path="music\\fripSide (フリップサイド) - only my railgun [mqms2].mp3"
+    OnlyMyRailgun_Path = "music\\fripSide (フリップサイド) - only my railgun [mqms2].mp3"
     while True:
-        if (birthday.isBirthday()and not birthdayed):
+        if birthday.isBirthday() and not birthdayed:
             for i in birthdayGroups:
-                await app.send_group_message(i,MessageChain("御坂美琴生日快乐!") )
+                await app.send_group_message(i, MessageChain("御坂美琴生日快乐!"))
                 await asyncio.sleep(1)
-                await app.send_group_message(i,MessageChain(Image(path="image\\birthday.png")))
+                await app.send_group_message(i, MessageChain(Image(path="image\\birthday.png")))
                 await asyncio.sleep(1)
-                await app.send_group_message(i,MessageChain([OnlyMyRailgun]))
+                await app.send_group_message(i, MessageChain([OnlyMyRailgun]))
                 await asyncio.sleep(1)
-                await app.send_group_message(i,MessageChain(Voice(data_bytes= await silkcoder.async_encode(OnlyMyRailgun_Path,))))
+                await app.send_group_message(i, MessageChain(
+                    Voice(data_bytes=await silkcoder.async_encode(OnlyMyRailgun_Path, ))))
                 await asyncio.sleep(1)
-                with open(OnlyMyRailgun_Path,"rb") as f:
-                    await app.upload_file(name="fripSide (フリップサイド) - only my railgun [mqms2].mp3",target=i,path="",data=f.read(),method=UploadMethod.Group
-)
-            birthdayed=True
+                with open(OnlyMyRailgun_Path, "rb") as f:
+                    await app.upload_file(name="fripSide (フリップサイド) - only my railgun [mqms2].mp3", target=i, path="",
+                                          data=f.read(), method=UploadMethod.Group
+                                          )
+            birthdayed = True
         elif (not birthday.isBirthday()):
-            birthdayed=False
+            birthdayed = False
         await asyncio.sleep(1)
+
 
 @app.broadcast.receiver("FriendMessage")
 async def friend_message_listener(app: Ariadne, friend: Friend):
@@ -67,38 +69,12 @@ async def friend_message_listener(app: Ariadne, friend: Friend):
 @app.broadcast.receiver("GroupMessage", decorators=[DetectPrefix('bot 计算器')])  # 计算器
 async def Calculator(app: Ariadne, chain: MessageChain, group: Group):
     if group.id == 322819699 or group.id == 599795569:
-
-        text = str(chain).replace("bot 计算器", "").strip()
-        can = "1234567890+-*/()|&^."
-        canfun = ["sum"]  # 当作没有
-        indexOffest = 0  # 当作没有
-        for i in range(len(text)):
-            i += indexOffest  # 当作没有
-            _break = False
-            if (text[i] in can):
-
-                pass
-            else:  # 放弃兼容sum 当作没有
-                for i2 in canfun:
-                    print(f"off:{indexOffest},i2:{i2},i1{text[i]}")
-                    if text[i:i + len(i2)] in canfun:
-
-                        indexOffest += len(i2)
-                        pass
-                    else:
-                        _break = True
-                        break
-                if (_break):
-                    break
-        else:
-            try:
-                num = eval(text)
-            except Exception as e:
-                num = e
-
+        try:
+            num = calculator.calculator(chain)
             await app.send_group_message(group, MessageChain([str(num)]))
             return
-        await app.send_group_message(group, MessageChain("有问题"))
+        except:
+            await app.send_group_message(group, MessageChain("有问题"))
 
 
 @app.broadcast.receiver("GroupMessage", decorators=[DetectPrefix('bot music')])

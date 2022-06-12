@@ -13,7 +13,7 @@ data = {"s": "water", "limit": 2}
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36 QIHU 360SE'
 }
-with open("cookies.pickle", "rb") as f:  # 实际上根本不需要，只要随便一个字符串当电话就行
+with open("../cookies.pickle", "rb") as f:  # 实际上根本不需要，只要随便一个字符串当电话就行
     se = pickle.load(f)
 
 
