@@ -120,8 +120,8 @@ async def input_(app, chain, user, group, text):
     if text == "贴贴":  # 贴贴
         await app.send_group_message(group, MessageChain([At(user.id), "贴贴"]))
     if text == "Misaka" or text == "misaka":  # 图片
-        print("image/" + image.get())
-        await app.send_group_message(group, MessageChain([At(user.id), Image(path="image/" + image.get())]))
+        print("Resource/image/" + image.get())
+        await app.send_group_message(group, MessageChain([At(user.id), Image(path="Resource/image/" + image.get())]))
     if text == "?":  # 帮助
         await app.send_group_message(group, MessageChain(["bot 开头或者@机器人:"
                                                           "随机御坂照片: Misaka\n"
