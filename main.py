@@ -12,7 +12,7 @@ from graia.ariadne.message.parser.base import MentionMe, DetectPrefix
 from graia.ariadne.model import Friend, Group, Member
 from graiax import silkcoder
 
-from plugin import birthday, image, music as _music, calculator
+from plugin import birthday, image, music as _music, calculator, hitokoto
 
 birthdayGroups = [322819699, 599795569]
 birthdayed = False
@@ -107,6 +107,11 @@ async def on_mention_me(app: Ariadne, chain: MessageChain, group: Group, user: M
         print(str(chain[2]).strip())  # 输入处理
         text = str(chain[2]).strip()
         await input_(app, chain, user, group, text)
+
+
+@app.broadcast.receiver("GroupMessage", decorators=[DetectPrefix('bot hitokoto')])
+async def on_mention_me(app: Ariadne, chain: MessageChain, group: Group):
+    await app.send_group_message(group, MessageChain(hitokoto.hitokoto(chain)))
 
 
 async def input_(app, chain, user, group, text):
