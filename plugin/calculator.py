@@ -26,3 +26,5 @@ def calculator(chain):
             num = eval(text)
         except Exception as e:
             num = e
+        return num
+    return "有问题"

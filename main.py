@@ -14,6 +14,8 @@ from graia.ariadne.model import Friend, Group, Member
 from graiax import silkcoder
 
 from plugin import birthday, image, music as _music, calculator, hitokoto
+from plugin import weather, ncov
+
 abspath = os.path.abspath(__file__)
 dname = os.path.dirname(abspath)
 os.chdir(dname)
@@ -118,6 +120,19 @@ async def Hitokoto(app: Ariadne, chain: MessageChain, group: Group):
     await app.send_group_message(group, MessageChain(hitokoto.hitokoto(chain)))
 
 
+@app.broadcast.receiver("GroupMessage", decorators=[DetectPrefix('bot weather')])
+async def Weather(app: Ariadne, chain: MessageChain, group: Group):
+    text = str(chain).replace("bot weather", "").strip()
+    await app.send_group_message(group, MessageChain(weather.get(text)))
+
+
+@app.broadcast.receiver("GroupMessage", decorators=[DetectPrefix('bot ncov')])
+async def nCov(app: Ariadne, chain: MessageChain, group: Group):
+    text = str(chain).replace("bot ncov", "").strip()
+    ncovtext = ncov.get(text)
+    await app.send_group_message(group, MessageChain(ncovtext))
+
+
 async def input_(app, chain, user, group, text):
     ##input_
 
@@ -129,10 +144,12 @@ async def input_(app, chain, user, group, text):
     if text == "?":  # 帮助
         await app.send_group_message(group, MessageChain(["bot 开头或者@机器人:"
                                                           "随机御坂照片: Misaka\n"
-                                                          "贴贴: 贴贴\n"
+                                                          "贴贴:贴贴\n"
                                                           "只能bot开头"
                                                           "计算器: 计算器 <算式>(python语法)\n"
-                                                          "点歌: music <音乐名>"
+                                                          "点歌:music <音乐名>"
+                                                          "天气:weather <地区(不要省市县)>"
+                                                          "疫情:ncov <省份(带省市)>"
                                                           ]))
 
 
