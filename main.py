@@ -12,7 +12,7 @@ from graia.ariadne.message.parser.base import MentionMe, DetectPrefix
 from graia.ariadne.model import Friend, Group, Member
 from graiax import silkcoder
 
-from plugin import birthday, image, music as _music,calculator
+from plugin import birthday, image, music as _music, calculator
 
 birthdayGroups = [322819699, 599795569]
 birthdayed = False
@@ -38,13 +38,13 @@ app = Ariadne(
 async def start_background(loop: AbstractEventLoop):
     global birthdayed
     global OnlyMyRailgun
-    OnlyMyRailgun_Path = "music\\fripSide (フリップサイド) - only my railgun [mqms2].mp3"
+    OnlyMyRailgun_Path = "Resource/music\\fripSide (フリップサイド) - only my railgun [mqms2].mp3"
     while True:
         if birthday.isBirthday() and not birthdayed:
             for i in birthdayGroups:
                 await app.send_group_message(i, MessageChain("御坂美琴生日快乐!"))
                 await asyncio.sleep(1)
-                await app.send_group_message(i, MessageChain(Image(path="image\\birthday.png")))
+                await app.send_group_message(i, MessageChain(Image(path="Resource/image\\birthday.png")))
                 await asyncio.sleep(1)
                 await app.send_group_message(i, MessageChain([OnlyMyRailgun]))
                 await asyncio.sleep(1)
