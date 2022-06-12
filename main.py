@@ -1,4 +1,5 @@
 import asyncio
+import os
 from asyncio import AbstractEventLoop
 
 from graia.ariadne.app import Ariadne
@@ -13,7 +14,9 @@ from graia.ariadne.model import Friend, Group, Member
 from graiax import silkcoder
 
 from plugin import birthday, image, music as _music, calculator, hitokoto
-
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+os.chdir(dname)
 birthdayGroups = [322819699, 599795569]
 birthdayed = False
 OnlyMyRailgun = MusicShare(
@@ -36,6 +39,7 @@ app = Ariadne(
 
 @app.broadcast.receiver(ApplicationLaunched)
 async def start_background(loop: AbstractEventLoop):
+    print(os.getcwd())
     global birthdayed
     global OnlyMyRailgun
     OnlyMyRailgun_Path = "Resource/music\\fripSide (フリップサイド) - only my railgun [mqms2].mp3"
@@ -110,7 +114,7 @@ async def on_mention_me(app: Ariadne, chain: MessageChain, group: Group, user: M
 
 
 @app.broadcast.receiver("GroupMessage", decorators=[DetectPrefix('bot hitokoto')])
-async def on_mention_me(app: Ariadne, chain: MessageChain, group: Group):
+async def Hitokoto(app: Ariadne, chain: MessageChain, group: Group):
     await app.send_group_message(group, MessageChain(hitokoto.hitokoto(chain)))
 
 
@@ -120,8 +124,8 @@ async def input_(app, chain, user, group, text):
     if text == "贴贴":  # 贴贴
         await app.send_group_message(group, MessageChain([At(user.id), "贴贴"]))
     if text == "Misaka" or text == "misaka":  # 图片
-        print("image/" + image.get())
-        await app.send_group_message(group, MessageChain([At(user.id), Image(path="image/" + image.get())]))
+        print("Resource/image/" + image.get())
+        await app.send_group_message(group, MessageChain([At(user.id), Image(path="Resource/image/" + image.get())]))
     if text == "?":  # 帮助
         await app.send_group_message(group, MessageChain(["bot 开头或者@机器人:"
                                                           "随机御坂照片: Misaka\n"
